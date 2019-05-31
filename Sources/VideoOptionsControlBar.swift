@@ -9,13 +9,13 @@
  * Refer to the COPYING file of the official project for license.
  *****************************************************************************/
 
-@objc (VideoOptionsControlBarDelegate)
+@objc (VLCVideoOptionsControlBarDelegate)
 protocol VideoOptionsControlBarDelegate: class {
     func didToggleFullScreen(_ optionsBar: VideoOptionsControlBar)
     func didToggleRepeat(_ optionsBar: VideoOptionsControlBar)
     func didSelectSubtitle(_ optionsBar: VideoOptionsControlBar)
     func didSelectMoreOptions(_ optionsBar: VideoOptionsControlBar)
-    func didToggleOrientationLock(_ optionsBar: VideoOptionsControlBar)
+    func didToggleInterfaceLock(_ optionsBar: VideoOptionsControlBar)
 }
 
 @objc (VLCVideoOptionsControlBar)
@@ -23,21 +23,57 @@ protocol VideoOptionsControlBarDelegate: class {
     
     // MARK: Instance variables
     var delegate: VideoOptionsControlBarDelegate?
+    private var rptMode: VLCRepeatMode = .doNotRepeat
+    
+    var orientationAxis: NSLayoutConstraint.Axis {
+        set {
+            // rotate the control bar's orientation by switching it's height and width values and changing it's layout positioning
+            axis = newValue
+            let minX: CGFloat = frame.maxX - frame.size.height
+            let minY: CGFloat = frame.maxY - frame.size.width
+            frame = CGRect(x: minX, y: minY, width: frame.size.height, height:frame.size.width)
+        }
+        
+        get {
+            return axis
+        }
+    }
+    
+    var repeatMode: VLCRepeatMode {
+        set {
+            rptMode = newValue
+            switch newValue {
+            case .repeatCurrentItem:
+                repeatButton.setImage(UIImage(named: "repeatOne-new"), for: .normal)
+                break
+            case .repeatAllItems:
+                repeatButton.setImage(UIImage(named: "repeat-new"), for: .normal)
+                break
+            default: // no repeat
+                repeatButton.setImage(UIImage(named: "no-repeat-new"), for: .normal)
+                break
+            }
+        }
+        
+        get {
+            return rptMode
+        }
+    }
     
     lazy var toggleFullScreenButton: UIButton = {
         var toggle = UIButton(type: .system)
-        toggle.addTarget(self, action: #selector(toggleFullscreen), for: .touchUpInside)
         toggle.setImage(UIImage(named: "fullscreenIcon-new"), for: .normal)
-        toggle.tintColor = .orange
+        toggle.addTarget(self, action: #selector(toggleFullscreen), for: .touchUpInside)
+        toggle.tintColor = .white
         //TODO: add accessability options for fullScreenButton
         return toggle
     }()
     
     lazy var selectSubtitleButton: UIButton = {
         var subbutton = UIButton(type: .system)
-        subbutton.addTarget(self, action: #selector(selectSubtitle), for: .touchUpInside)
         subbutton.setImage(UIImage(named: "subtitleIcon-new"), for: .normal)
-        subbutton.tintColor = .orange
+        subbutton.addTarget(self, action: #selector(selectSubtitle), for: .touchUpInside)
+        subbutton.tintColor = .white
         //TODO: add accessability options for selectingSubtitleButton
         return subbutton
     }()
@@ -45,26 +81,26 @@ protocol VideoOptionsControlBarDelegate: class {
     lazy var repeatButton: UIButton = {
         var rptButton = UIButton(type: .system)
         rptButton.addTarget(self, action: #selector(toggleRepeat), for: .touchUpInside)
-        rptButton.setImage(UIImage(named: "repeatOne-new"), for: .normal)
-        rptButton.tintColor = .orange
-        //TODO: add accessability options for repeatButton
+        rptButton.setImage(UIImage(named: "no-repeat-new"), for: .normal)
+        rptButton.tintColor = .white
+        // TODO: add accessability options for repeatButton
         return rptButton
     }()
     
-    lazy var orientationLockButton: UIButton = {
-        var orientLockButton = UIButton(type: .system)
-        orientLockButton.addTarget(self, action: #selector(toggleOrientation), for: .touchUpInside)
-        orientLockButton.setImage(UIImage(named: "lockIcon-new"), for: .normal)
-        orientLockButton.tintColor = .orange
-        //TODO: add accessability options for orientationLockButton
-        return orientLockButton
+    lazy var interfaceLockButton: UIButton = {
+        var interfaceLockButton = UIButton(type: .system)
+        interfaceLockButton.setImage(UIImage(named: "lock-new"), for: .normal)
+        interfaceLockButton.addTarget(self, action: #selector(toggleInterfaceLock), for: .touchUpInside)
+        interfaceLockButton.tintColor = .white
+        // TODO: add accessability options for orientationLockButton
+        return interfaceLockButton
     }()
     
     lazy var moreOptionsButton: UIButton = {
         var moreOptionsButton = UIButton(type: .system)
-        moreOptionsButton.addTarget(self, action: #selector(selectMoreOptions), for: .touchUpInside)
         moreOptionsButton.setImage(UIImage(named: "moreWhite-new"), for: .normal)
-        moreOptionsButton.tintColor = .orange
+        moreOptionsButton.addTarget(self, action: #selector(selectMoreOptions), for: .touchUpInside)
+        moreOptionsButton.tintColor = .white
         //TODO: add accessability options for moreOptionsButton
         return moreOptionsButton
     }()
@@ -76,11 +112,12 @@ protocol VideoOptionsControlBarDelegate: class {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        addArrangedSubview(toggleFullScreenButton)
-        addArrangedSubview(selectSubtitleButton)
-        addArrangedSubview(repeatButton)
-        addArrangedSubview(orientationLockButton)
-        addArrangedSubview(moreOptionsButton)
+        self.addArrangedSubview(toggleFullScreenButton)
+        self.addArrangedSubview(selectSubtitleButton)
+        self.addArrangedSubview(repeatButton)
+        self.addArrangedSubview(interfaceLockButton)
+        self.addArrangedSubview(moreOptionsButton)
+        axis = NSLayoutConstraint.Axis.vertical
     }
     
     // MARK: Button Action Buttons
@@ -100,8 +137,8 @@ protocol VideoOptionsControlBarDelegate: class {
         delegate?.didToggleRepeat(self)
     }
     
-    func toggleOrientation() {
-        delegate?.didToggleOrientationLock(self)
+    func toggleInterfaceLock() {
+        delegate?.didToggleInterfaceLock(self)
     }
 }
 
