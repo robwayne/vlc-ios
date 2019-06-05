@@ -481,15 +481,15 @@ typedef NS_ENUM(NSInteger, VLCPanType) {
 
 - (void)viewDidLayoutSubviews
 {
-    CGRect equalizerRect = _equalizerView.frame;
-    equalizerRect.origin.x = CGRectGetMidX(self.view.bounds) - CGRectGetWidth(equalizerRect)/2.0;
-    equalizerRect.origin.y = CGRectGetMidY(self.view.bounds) - CGRectGetHeight(equalizerRect)/2.0;
-    _equalizerView.frame = equalizerRect;
-    
     CGRect controllerPanelFrame = _controllerPanel.frame;
     
     #if !NEW_UI
         CGRect multiSelectionFrame;
+    
+        CGRect equalizerRect = _equalizerView.frame;
+        equalizerRect.origin.x = CGRectGetMidX(self.view.bounds) - CGRectGetWidth(equalizerRect)/2.0;
+        equalizerRect.origin.y = CGRectGetMidY(self.view.bounds) - CGRectGetHeight(equalizerRect)/2.0;
+        _equalizerView.frame = equalizerRect;
 
         if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPhone) {
             multiSelectionFrame = (CGRect){CGPointMake(0., 0.), [_multiSelectionView proposedDisplaySize]};
@@ -1381,6 +1381,8 @@ currentMediaHasTrackToChooseFrom:(BOOL)currentMediaHasTrackToChooseFrom
     }
     #if !NEW_UI
         _multiSelectionView.displayLock = _interfaceIsLocked;
+    #else
+        _videoOptionsControlBar.interfaceEnabled = !_interfaceIsLocked;
     #endif
 }
 
@@ -1854,7 +1856,7 @@ currentMediaHasTrackToChooseFrom:(BOOL)currentMediaHasTrackToChooseFrom
 #pragma mark - VLCVideoOptionsControlBarDelegate
 
 - (void)didSelectMoreOptions:(VLCVideoOptionsControlBar * _Nonnull)optionsBar {
-    NSLog(@"moreOptions Selected");
+    [self moreActions:_videoOptionsControlBar.moreOptionsButton];
 }
 
 - (void)didSelectSubtitle:(VLCVideoOptionsControlBar * _Nonnull)optionsBar {
@@ -1862,15 +1864,15 @@ currentMediaHasTrackToChooseFrom:(BOOL)currentMediaHasTrackToChooseFrom
 }
 
 - (void)didToggleFullScreen:(VLCVideoOptionsControlBar * _Nonnull)optionsBar {
-    NSLog(@"toggleFullScreen Selected");
+    [_vpc toggleFullScreen];
 }
 
 - (void)didToggleInterfaceLock:(VLCVideoOptionsControlBar * _Nonnull)optionsBar {
-    NSLog(@"interFaceLock Selected");
+    [self toggleUILock];
 }
 
 - (void)didToggleRepeat:(VLCVideoOptionsControlBar * _Nonnull)optionsBar {
-    NSLog(@"repeatButtonToggled Selected");
+    [self toggleRepeatMode];
 }
 
 @end

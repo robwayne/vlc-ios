@@ -25,6 +25,15 @@ protocol VideoOptionsControlBarDelegate: class {
     var delegate: VideoOptionsControlBarDelegate?
     private var rptMode: VLCRepeatMode = .doNotRepeat
     
+    var subtitleToggled: Bool {
+        set {
+            selectSubtitleButton.tintColor = newValue ? .orange : .white
+        }
+        get {
+            return selectSubtitleButton.tintColor == .white
+        }
+    }
+    
     var orientationAxis: NSLayoutConstraint.Axis {
         set {
             // rotate the control bar's orientation by switching it's height and width values and changing it's layout positioning
@@ -57,6 +66,16 @@ protocol VideoOptionsControlBarDelegate: class {
         
         get {
             return rptMode
+        }
+    }
+
+    var interfaceEnabled: Bool {
+        set {
+            interfaceLockButton.tintColor = newValue ? .white : .orange
+        }
+        
+        get {
+            return interfaceLockButton.tintColor == .white
         }
     }
 
@@ -111,6 +130,7 @@ protocol VideoOptionsControlBarDelegate: class {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        interfaceEnabled = true
         self.addArrangedSubview(toggleFullScreenButton)
         self.addArrangedSubview(selectSubtitleButton)
         self.addArrangedSubview(repeatButton)
