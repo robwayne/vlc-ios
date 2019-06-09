@@ -1,5 +1,5 @@
 /*****************************************************************************
- * VideoOptionsControlBar .swift
+ * MediaOptionControlBar.swift
  *
  * Copyright © 2019 VLC authors and VideoLAN
  *
@@ -9,20 +9,20 @@
  * Refer to the COPYING file of the official project for license.
  *****************************************************************************/
 
-@objc (VLCVideoOptionsControlBarDelegate)
-protocol VideoOptionsControlBarDelegate: class {
-    func didToggleFullScreen(_ optionsBar: VideoOptionsControlBar)
-    func didToggleRepeat(_ optionsBar: VideoOptionsControlBar)
-    func didSelectSubtitle(_ optionsBar: VideoOptionsControlBar)
-    func didSelectMoreOptions(_ optionsBar: VideoOptionsControlBar)
-    func didToggleInterfaceLock(_ optionsBar: VideoOptionsControlBar)
+@objc (VLCMediaOptionControlBarDelegate)
+protocol MediaOptionControlBarDelegate: class {
+    func didToggleFullScreen(_ optionsBar: MediaOptionControlBar)
+    func didToggleRepeat(_ optionsBar: MediaOptionControlBar)
+    func didSelectSubtitle(_ optionsBar: MediaOptionControlBar)
+    func didSelectMoreOptions(_ optionsBar: MediaOptionControlBar)
+    func didToggleInterfaceLock(_ optionsBar: MediaOptionControlBar)
 }
 
-@objc (VLCVideoOptionsControlBar)
-@objcMembers class VideoOptionsControlBar: UIStackView {
+@objc (VLCMediaOptionControlBar)
+@objcMembers class MediaOptionControlBar: UIStackView {
     
     // MARK: Instance variables
-    var delegate: VideoOptionsControlBarDelegate?
+    weak var delegate: MediaOptionControlBarDelegate?
     private var rptMode: VLCRepeatMode = .doNotRepeat
     
     var subtitleToggled: Bool {
@@ -54,13 +54,10 @@ protocol VideoOptionsControlBarDelegate: class {
             switch newValue {
             case .repeatCurrentItem:
                 repeatButton.setImage(UIImage(named: "repeatOne-new"), for: .normal)
-                break
             case .repeatAllItems:
                 repeatButton.setImage(UIImage(named: "repeat-new"), for: .normal)
-                break
             default: // no repeat
                 repeatButton.setImage(UIImage(named: "no-repeat-new"), for: .normal)
-                break
             }
         }
         
