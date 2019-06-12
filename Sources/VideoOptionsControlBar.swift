@@ -1,5 +1,5 @@
 /*****************************************************************************
- * VideoOptionsControlBar.swift
+ * VideoOptionsControlBar .swift
  *
  * Copyright © 2019 VLC authors and VideoLAN
  *
@@ -19,13 +19,13 @@ protocol VideoOptionsControlBarDelegate: class {
 }
 
 @objc (VLCVideoOptionsControlBar)
-class VideoOptionsControlBar: UIStackView {
+@objcMembers class VideoOptionsControlBar: UIStackView {
     
     // MARK: Instance variables
-    @objc weak var delegate: VideoOptionsControlBarDelegate?
+    var delegate: VideoOptionsControlBarDelegate?
     private var rptMode: VLCRepeatMode = .doNotRepeat
     
-    @objc var orientationAxis: NSLayoutConstraint.Axis {
+    var orientationAxis: NSLayoutConstraint.Axis {
         set {
             // rotate the control bar's orientation by switching it's height and width values and changing it's layout positioning
             axis = newValue
@@ -38,8 +38,8 @@ class VideoOptionsControlBar: UIStackView {
             return axis
         }
     }
-    
-    @objc var repeatMode: VLCRepeatMode {
+
+    var repeatMode: VLCRepeatMode {
         set {
             rptMode = newValue
             switch newValue {
@@ -59,44 +59,48 @@ class VideoOptionsControlBar: UIStackView {
             return rptMode
         }
     }
-    
-    @objc var toggleFullScreenButton: UIButton = {
+
+    lazy var toggleFullScreenButton: UIButton = {
         var toggle = UIButton(type: .system)
         toggle.setImage(UIImage(named: "fullscreenIcon-new"), for: .normal)
+        toggle.addTarget(self, action: #selector(toggleFullscreen), for: .touchUpInside)
         toggle.tintColor = .white
         //TODO: add accessability options for fullScreenButton
         return toggle
     }()
-    
-    @objc var selectSubtitleButton: UIButton = {
+
+    lazy var selectSubtitleButton: UIButton = {
         var subbutton = UIButton(type: .system)
         subbutton.setImage(UIImage(named: "subtitleIcon-new"), for: .normal)
+        subbutton.addTarget(self, action: #selector(selectSubtitle), for: .touchUpInside)
         subbutton.tintColor = .white
-        // TODO: add accessability options for selectingSubtitleButton
+        //TODO: add accessability options for selectingSubtitleButton
         return subbutton
     }()
     
-    @objc var repeatButton: UIButton = {
+    lazy var repeatButton: UIButton = {
         var rptButton = UIButton(type: .system)
+        rptButton.addTarget(self, action: #selector(toggleRepeat), for: .touchUpInside)
         rptButton.setImage(UIImage(named: "no-repeat-new"), for: .normal)
         rptButton.tintColor = .white
         // TODO: add accessability options for repeatButton
         return rptButton
     }()
-    
-    @objc var interfaceLockButton: UIButton = {
+
+    lazy var interfaceLockButton: UIButton = {
         var interfaceLockButton = UIButton(type: .system)
         interfaceLockButton.setImage(UIImage(named: "lock-new"), for: .normal)
+        interfaceLockButton.addTarget(self, action: #selector(toggleInterfaceLock), for: .touchUpInside)
         interfaceLockButton.tintColor = .white
         // TODO: add accessability options for orientationLockButton
         return interfaceLockButton
     }()
-    
-    @objc var moreOptionsButton: UIButton = {
+    lazy var moreOptionsButton: UIButton = {
         var moreOptionsButton = UIButton(type: .system)
         moreOptionsButton.setImage(UIImage(named: "moreWhite-new"), for: .normal)
+        moreOptionsButton.addTarget(self, action: #selector(selectMoreOptions), for: .touchUpInside)
         moreOptionsButton.tintColor = .white
-        // TODO: add accessability options for moreOptionsButton
+        //TODO: add accessability options for moreOptionsButton
         return moreOptionsButton
     }()
     
@@ -104,18 +108,9 @@ class VideoOptionsControlBar: UIStackView {
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
-    private func setupButtonTargets() {
-        toggleFullScreenButton.addTarget(self, action: #selector(toggleFullscreen), for: .touchUpInside)
-        interfaceLockButton.addTarget(self, action: #selector(toggleInterfaceLock), for: .touchUpInside)
-        repeatButton.addTarget(self, action: #selector(toggleRepeat), for: .touchUpInside)
-        selectSubtitleButton.addTarget(self, action: #selector(selectSubtitle), for: .touchUpInside)
-        moreOptionsButton.addTarget(self, action: #selector(selectMoreOptions), for: .touchUpInside)
-    }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupButtonTargets()
         self.addArrangedSubview(toggleFullScreenButton)
         self.addArrangedSubview(selectSubtitleButton)
         self.addArrangedSubview(repeatButton)
@@ -123,25 +118,25 @@ class VideoOptionsControlBar: UIStackView {
         self.addArrangedSubview(moreOptionsButton)
         axis = NSLayoutConstraint.Axis.vertical
     }
-    
-    // MARK: Button Action Functions
-    @objc func toggleFullscreen() {
+
+    // MARK: Button Action Buttons
+    func toggleFullscreen() {
         delegate?.didToggleFullScreen(self)
     }
     
-    @objc func selectSubtitle() {
+    func selectSubtitle() {
         delegate?.didSelectSubtitle(self)
     }
     
-    @objc func selectMoreOptions() {
+    func selectMoreOptions() {
         delegate?.didSelectMoreOptions(self)
     }
     
-    @objc func toggleRepeat() {
+    func toggleRepeat() {
         delegate?.didToggleRepeat(self)
     }
     
-    @objc func toggleInterfaceLock() {
+    func toggleInterfaceLock() {
         delegate?.didToggleInterfaceLock(self)
     }
 }

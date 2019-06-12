@@ -43,7 +43,7 @@
 #define DEFAULT_FOV 80.f
 #define MAX_FOV 150.f
 #define MIN_FOV 20.f
-#define NEW_UI 1
+#define NEW_UI 0
 
 typedef NS_ENUM(NSInteger, VLCPanType) {
   VLCPanTypeNone,
@@ -500,7 +500,6 @@ typedef NS_ENUM(NSInteger, VLCPanType) {
             return;
         }
 
-        // TODO: Refactor this and remove duplicate code
         if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])
             _multiSelectionView.showsEqualizer = YES;
         else
@@ -510,7 +509,6 @@ typedef NS_ENUM(NSInteger, VLCPanType) {
         multiSelectionFrame.origin.x = controllerPanelFrame.size.width - multiSelectionFrame.size.width;
         multiSelectionFrame.origin.y = controllerPanelFrame.origin.y - multiSelectionFrame.size.height;
         _multiSelectionView.frame = multiSelectionFrame;
-            
     #else
         CGRect videoOptionsBarFrame = CGRectMake(0., 0., 24., 120.);
         CGFloat x,y;
@@ -1767,7 +1765,7 @@ currentMediaHasTrackToChooseFrom:(BOOL)currentMediaHasTrackToChooseFrom
             if (self->_videoOptionsControlBar.hidden == NO) {
                 self->_videoOptionsControlBar.hidden = YES;
                 if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
-                    self->_videoOptionsControlBar.orientationAxis = UILayoutConstraintAxisVertical;
+                    self->_videoOptionsControlBar.orientationAxis = UILayoutConstraintAxisHorizontal;
                 } else {
                     self->_videoOptionsControlBar.orientationAxis = UILayoutConstraintAxisVertical;
                 }
